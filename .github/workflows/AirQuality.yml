@@ -1,9 +1,8 @@
 name: Air Quality API to CSV
 
 on:
-  push
-    branches:
-      - main
+  schedule:
+    - cron:  '10 * * * *'
 
 jobs:
   api-to-csv:
@@ -13,16 +12,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install csvkit
       run: |
         sudo apt-get update
-        sudo apt-get install -y curl jq csvkit
+        sudo apt-get install -y csvkit
 
     - name: Make API call
       run: |
         curl 'https://api.waqi.info/feed/A405658/?token=dfa2cee3412fc2bd08d63c72bb5a15404a580663' -o data.json
 
-    - name: Extract and transform data
+    - name: Extract data
       run: |
         jq -r '[.data.aqi, .data.city.name, .data.dominentpol, .data.time.s] | @csv' data.json > data.csv
 
@@ -31,7 +30,7 @@ jobs:
         datetime=$(cut -d',' -f4 data.csv)
         datetime_simple=$(date -d"$datetime" "+%Y-%m-%d %H:%M:%S")
         sed -i "s/$datetime/$datetime_simple/" data.csv
-    
+
     - name: Append data to CSV
       run: |
         csvstack existing.csv data.csv > new.csv
