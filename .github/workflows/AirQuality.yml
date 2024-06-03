@@ -27,9 +27,9 @@ jobs:
 
     - name: Transform datetime
       run: |
-        datetime=$(cut -d',' -f4 data.csv)
+        datetime=$(cut -d',' -f4 data.csv | tr -d '"')
         datetime_simple=$(date -d"$datetime" "+%Y-%m-%d %H:%M:%S")
-        sed -i "s/$datetime/$datetime_simple/" data.csv
+        sed -i "s/\"$datetime\"/$datetime_simple/" data.csv
 
     - name: Append data to CSV
       run: |
