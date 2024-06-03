@@ -1,0 +1,43 @@
+name: API to CSV
+
+on:
+  schedule:
+    - cron:  '10 * * * *'
+
+jobs:
+  api-to-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install csvkit
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y csvkit
+
+    - name: Make API call
+      run: |
+        curl 'https://api.waqi.info/feed/A405658/?token=dfa2cee3412fc2bd08d63c72bb5a15404a580663' -o data.json
+
+    - name: Extract data
+      run: |
+        jq -r '[.data.aqi, .data.city.name, .data.dominentpol, .data.time.s] | @csv' data.json > data.csv
+
+    - name: Transform datetime
+      run: |
+        datetime=$(cut -d',' -f4 data.csv)
+        datetime_simple=$(date -d"$datetime" "+%Y-%m-%d %H:%M:%S")
+        sed -i "s/$datetime/$datetime_simple/" data.csv
+
+    - name: Append data to CSV
+      run: |
+        csvstack existing.csv data.csv > new.csv
+
+    - name: Commit and push
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Update CSV" -a
+        git push
