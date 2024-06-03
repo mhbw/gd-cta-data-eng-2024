@@ -1,4 +1,4 @@
-name: Air Quality API to CSV
+name: AirQuality
 
 on:
   schedule:
