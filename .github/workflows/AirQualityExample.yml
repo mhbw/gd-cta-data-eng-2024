@@ -33,7 +33,7 @@ jobs:
 
     - name: Append data to CSV
       run: |
-        csvstack existing.csv data.csv > new.csv
+        csvstack .github/workflows/existing.csv data.csv > new.csv
 
     - name: Commit and push
       run: |
