@@ -1,8 +1,8 @@
 name: API to CSV
 
-on:
-  schedule:
-    - cron:  '* * * * *'
+###on:
+###  schedule:
+###    - cron:  '* * * * *'
 
 jobs:
   api-to-csv:
