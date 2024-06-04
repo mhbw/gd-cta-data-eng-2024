@@ -2,7 +2,7 @@ name: API to CSV
 
 on:
   schedule:
-    - cron:  '10 * * * *'
+    - cron:  '* * * * *'
 
 jobs:
   api-to-csv:
